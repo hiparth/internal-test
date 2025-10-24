@@ -1,0 +1,5 @@
+streamlit
+plotly
+pandas
+streamlit-shadcn-ui
+databricks-sql-connector

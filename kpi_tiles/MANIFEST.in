@@ -1,0 +1,2 @@
+recursive-include kpi_tiles/frontend/build *
+

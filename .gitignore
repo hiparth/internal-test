@@ -1,0 +1,127 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Streamlit
+.streamlit/secrets.toml
+.streamlit/credentials.toml
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Node.js / React (for custom components)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# React build artifacts (keep built files for distribution)
+# Uncomment these if you want to exclude builds from git
+# custom_sidebar/frontend/build/
+# kpi_tiles/frontend/build/
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# Data files (if you don't want to commit large data files)
+*.csv
+*.xlsx
+*.xls
+# Uncomment the line below if you want to allow sample data
+# !sample_data.csv
+
+# Secrets and credentials (IMPORTANT!)
+*secret*
+*credential*
+*password*
+config_local.py
+
+# macOS
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+ehthumbs.db
+ehthumbs_vista.db
+
+# Compiled TypeScript
+*.js.map
+
+# Build outputs
+*.manifest
+*.spec
+
+# Distribution / packaging
+.Python
+*.pyd
+*.dll
+*.dylib
+

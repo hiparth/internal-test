@@ -1,0 +1,2 @@
+recursive-include custom_sidebar/frontend/build *
+
