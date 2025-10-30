@@ -1,0 +1,97 @@
+# Databricks Asset Bundle Configuration
+# This file defines how to deploy and run the Streamlit app on Databricks
+
+bundle:
+  name: retail-media-analytics-dashboard
+
+# Workspace configuration
+workspace:
+  # The workspace URL will be set from the Databricks CLI profile
+  # or you can hardcode it here: host: "https://your-workspace.cloud.databricks.com"
+  root_path: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}"
+
+# Artifacts to sync to workspace
+artifacts:
+  streamlit_app:
+    type: whl
+    path: .
+    build: |
+      # Build custom React components before deployment
+      cd custom_sidebar/frontend && npm install && npm run build && cd ../..
+      cd kpi_tiles/frontend && npm install && npm run build && cd ../..
+      cd performance_table/frontend && npm install && npm run build && cd ../..
+      
+      # Install custom components
+      pip install -e custom_sidebar/
+      pip install -e kpi_tiles/
+      pip install -e performance_table/
+
+# Define the Streamlit app resource
+resources:
+  apps:
+    retail_media_dashboard:
+      name: retail-media-analytics-dashboard
+      description: "Retail Media Analytics Dashboard - Performance tracking and bid optimization"
+      
+      # Streamlit app configuration
+      resources:
+        - name: streamlit_app_job
+          job:
+            name: ${bundle.name}-${bundle.target}
+            
+            job_clusters:
+              - job_cluster_key: main
+                new_cluster:
+                  spark_version: "13.3.x-scala2.12"
+                  node_type_id: "i3.xlarge"  # Adjust based on your needs
+                  num_workers: 0  # Single node for Streamlit
+                  custom_tags:
+                    application: "retail-media-dashboard"
+                    environment: "${bundle.target}"
+            
+            tasks:
+              - task_key: run_streamlit_app
+                job_cluster_key: main
+                
+                python_wheel_task:
+                  package_name: retail_media_dashboard
+                  entry_point: streamlit_app
+                  parameters: ["run", "app.py"]
+                
+                libraries:
+                  - whl: ${workspace.root_path}/files/${bundle.name}/dist/*.whl
+                  - pypi:
+                      package: streamlit
+                  - pypi:
+                      package: plotly
+                  - pypi:
+                      package: pandas
+                  - pypi:
+                      package: databricks-sql-connector
+                
+                # Environment variables for the app
+                environment:
+                  DATABRICKS_HOST: "{{secrets/retail-media-dashboard/databricks_host}}"
+                  DATABRICKS_TOKEN: "{{secrets/retail-media-dashboard/databricks_token}}"
+                  DATABRICKS_HTTP_PATH: "{{secrets/retail-media-dashboard/databricks_http_path}}"
+
+# Deployment targets (dev, staging, prod)
+targets:
+  dev:
+    mode: development
+    workspace:
+      host: "https://your-dev-workspace.cloud.databricks.com"
+    
+  prod:
+    mode: production
+    workspace:
+      host: "https://your-prod-workspace.cloud.databricks.com"
+    
+    # Production-specific settings
+    resources:
+      apps:
+        retail_media_dashboard:
+          permissions:
+            - level: CAN_VIEW
+              group_name: "users"
+

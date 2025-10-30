@@ -1,0 +1,36 @@
+# Include all necessary files in the package distribution
+
+# Python files
+recursive-include . *.py
+
+# Font files
+recursive-include fonts *.ttf
+
+# Asset files
+recursive-include assets *.png *.svg *.jpg *.jpeg
+
+# Custom component builds
+recursive-include custom_sidebar/frontend/build *
+recursive-include kpi_tiles/frontend/build *
+recursive-include performance_table/frontend/build *
+
+# Streamlit config
+recursive-include .streamlit *.toml
+
+# Documentation
+include README.md
+include requirements.txt
+include databricks.yml
+
+# Exclude unnecessary files
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.git*
+recursive-exclude custom_sidebar/frontend/node_modules *
+recursive-exclude kpi_tiles/frontend/node_modules *
+recursive-exclude performance_table/frontend/node_modules *
+recursive-exclude custom_sidebar/frontend/src *
+recursive-exclude kpi_tiles/frontend/src *
+recursive-exclude performance_table/frontend/src *
+
