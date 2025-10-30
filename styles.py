@@ -94,6 +94,32 @@ def apply_custom_styles():
     # Hide Streamlit's default sidebar collapse button and text
     st.markdown("""
         <style>
+        /* Custom background color for sidebar - #FCFCFC */
+        section[data-testid="stSidebar"] {
+            background-color: #FCFCFC !important;
+            border-right: 1px solid #E5E7EB !important;
+        }
+        
+        section[data-testid="stSidebar"] > div {
+            background-color: #FCFCFC !important;
+        }
+        
+        /* Remove ALL backgrounds from ALL sidebar child elements */
+        section[data-testid="stSidebar"] *:not(iframe) {
+            background-color: transparent !important;
+        }
+        
+        /* Ensure iframe has correct background */
+        section[data-testid="stSidebar"] iframe {
+            background-color: #FCFCFC !important;
+        }
+        
+        /* Make sidebar full height */
+        section[data-testid="stSidebar"],
+        section[data-testid="stSidebar"] > div:first-child {
+            min-height: 100vh !important;
+        }
+        
         /* Aggressively hide Streamlit's default sidebar collapse button */
         section[data-testid="stSidebar"] > div > div > button {
             display: none !important;

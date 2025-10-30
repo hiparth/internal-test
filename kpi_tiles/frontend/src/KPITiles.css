@@ -23,7 +23,7 @@ html, body {
 
 .kpi-grid {
   width: 100%;
-  max-width: 350px;
+  max-width: 400px;
   border-collapse: separate;
   border-spacing: 0;
   border: 2px solid #E5E7EB;
@@ -36,8 +36,9 @@ html, body {
 }
 
 .kpi-grid td {
-  padding: 14px 10px !important;
-  min-height: 70px;
+  padding: 16px 12px !important;
+  min-height: 80px;
+  width: 33.33%;
   border-right: 2px solid #E5E7EB;
   border-bottom: 2px solid #E5E7EB;
   vertical-align: top;

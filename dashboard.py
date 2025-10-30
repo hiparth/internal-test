@@ -16,6 +16,86 @@ def render_dashboard():
     """
     Render the Performance Dashboard page content.
     """
+    # Add page background and styling
+    st.markdown("""
+        <style>
+        /* Light grey background for entire page */
+        [data-testid="stAppViewContainer"] {
+            background-color: #FCFCFC !important;
+        }
+        
+        /* White container for main content with border shadow */
+        section[data-testid="stMain"] > div:first-child {
+            background-color: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Prevent horizontal scroll */
+        [data-testid="stAppViewContainer"] {
+            overflow-x: hidden !important;
+        }
+        section[data-testid="stMain"] {
+            overflow-x: hidden !important;
+        }
+        
+        /* Ensure columns fit within viewport */
+        [data-testid="column"] {
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+        
+        /* Ensure chart container doesn't overflow */
+        .js-plotly-plot {
+            max-width: 100% !important;
+        }
+        
+        /* Custom background color for sidebar - remove all grey backgrounds */
+        section[data-testid="stSidebar"] {
+            background-color: #FCFCFC !important;
+        }
+        section[data-testid="stSidebar"] > div {
+            background-color: #FCFCFC !important;
+        }
+        section[data-testid="stSidebar"] > div > div {
+            background-color: #FCFCFC !important;
+        }
+        section[data-testid="stSidebar"] > div > div > div {
+            background-color: #FCFCFC !important;
+        }
+        section[data-testid="stSidebar"] * {
+            background-color: transparent !important;
+        }
+        /* Remove any grey background from sidebar elements */
+        [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+            background-color: transparent !important;
+        }
+        [data-testid="stSidebar"] .element-container {
+            background-color: transparent !important;
+        }
+        /* Ensure iframe in sidebar has custom background */
+        section[data-testid="stSidebar"] iframe {
+            background-color: #FCFCFC !important;
+        }
+        /* Remove grey box that appears below sidebar navigation */
+        [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div {
+            background-color: transparent !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div > div {
+            background-color: transparent !important;
+        }
+        /* Target the specific grey container */
+        section[data-testid="stSidebar"] [data-testid="stVerticalBlock"]:not(:first-child) {
+            display: none !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
     # Header Section
     render_dashboard_header()
     
@@ -29,7 +109,8 @@ def render_dashboard():
 def render_dashboard_header():
     """Render the dashboard header with title, description, and export button."""
     # Create columns for title/description and export button
-    col1, col2 = st.columns([3, 1])
+    # Using [2, 1] ratio to match chart:KPI tiles layout
+    col1, col2 = st.columns([2, 1])
     
     with col1:
         st.markdown("""
@@ -46,12 +127,12 @@ def render_dashboard_header():
     with col2:
         # Export Report Button
         st.markdown("""
-            <div style="display: flex; justify-content: flex-end; align-items: flex-start; margin-top: 8px;">
+            <div style="display: flex; justify-content: flex-end; align-items: flex-start; margin-top: 8px; padding-right: 64px;">
                 <button style="
-                    background-color: #F9FAFB;
-                    border: 1px solid #E5E7EB;
+                    background-color: white;
+                    border: 1.5px solid #9333EA;
                     border-radius: 8px;
-                    padding: 10px 16px;
+                    padding: 10px 20px;
                     font-family: 'Gilroy', sans-serif;
                     font-weight: 500;
                     font-size: 14px;
@@ -60,8 +141,12 @@ def render_dashboard_header():
                     display: flex;
                     align-items: center;
                     gap: 8px;
+                    transition: all 0.2s ease;
+                    white-space: nowrap;
                 ">
-                    <span>📥</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14 10V12.6667C14 13.0203 13.8595 13.3594 13.6095 13.6095C13.3594 13.8595 13.0203 14 12.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V10M4.66667 6.66667L8 10M8 10L11.3333 6.66667M8 10V2" stroke="#9333EA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                     <span>Export Report</span>
                 </button>
             </div>
@@ -71,7 +156,7 @@ def render_dashboard_header():
 def render_filter_section():
     """Render the filter dropdowns section."""
     st.markdown("""
-        <div style="margin-bottom: 32px;">
+        <div style="margin-bottom: 40px; margin-top: 8px;">
     """, unsafe_allow_html=True)
     
     # Create filter dropdowns that span 2/3 width (same as chart column)
@@ -131,113 +216,104 @@ def render_main_content():
 
 def render_performance_chart():
     """Render the performance chart with dual-axis line chart."""
-    # Add CSS to style the column's inner div
-    st.markdown("""
-        <style>
-        /* Style the first column in the main content row */
-        main div[data-testid="column"]:first-of-type > div {
-            background-color: white !important;
-            border-radius: 12px !important;
-            padding: 20px !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-            margin-bottom: 16px !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
+    # KPI Selectors - use narrower columns to limit width
+    col1, col2, col3 = st.columns([1, 1, 2])
     
-    # Use st.container to group everything
-    with st.container():
-        
-        # KPI Selectors
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.selectbox(
-                "Primary KPI",
-                ["Impressions", "Clicks", "CTR", "Conversion Rate"],
-                index=0,
-                key="primary_kpi"
-            )
-        
-        with col2:
-            st.selectbox(
-                "Secondary KPI",
-                ["ROAS", "CPA", "CPC", "Spend"],
-                index=0,
-                key="secondary_kpi"
-            )
-        
-        # Create sample data for the chart
-        weeks = ["Wo Feb 3 2025", "Wo Feb 10 2025", "Wo Feb 17 2025", "Wo Feb 24 2025"]
-        impressions = [45, 55, 40, 50]
-        roas = [2.2, 2.8, 2.0, 2.6]
-        
-        # Create dual-axis line chart
-        fig = go.Figure()
-        
-        # Add Impressions line (left axis)
-        fig.add_trace(go.Scatter(
-            x=weeks,
-            y=impressions,
-            mode='lines+markers',
-            name='Impressions',
-            line=dict(color='#9333EA', width=3),
-            fill='tonexty',
-            fillcolor='rgba(147, 51, 234, 0.1)'
-        ))
-        
-        # Add ROAS line (right axis)
-        fig.add_trace(go.Scatter(
-            x=weeks,
-            y=roas,
-            mode='lines+markers',
-            name='ROAS',
-            line=dict(color='#7C3AED', width=3),
-            fill='tonexty',
-            fillcolor='rgba(124, 58, 237, 0.1)',
-            yaxis='y2'
-        ))
-        
-        # Update layout for dual-axis
-        fig.update_layout(
-            title=None,
-            xaxis=dict(
-                title=None,
-                showgrid=True,
-                gridcolor='#F3F4F6',
-                tickfont=dict(family='Gilroy', size=12, color='#6B7280')
-            ),
-            yaxis=dict(
-                title="Impressions",
-                side="left",
-                showgrid=True,
-                gridcolor='#F3F4F6',
-                tickfont=dict(family='Gilroy', size=12, color='#6B7280'),
-                titlefont=dict(family='Gilroy', size=12, color='#6B7280')
-            ),
-            yaxis2=dict(
-                title="ROAS",
-                side="right",
-                overlaying="y",
-                showgrid=False,
-                tickfont=dict(family='Gilroy', size=12, color='#6B7280'),
-                titlefont=dict(family='Gilroy', size=12, color='#6B7280')
-            ),
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1,
-                font=dict(family='Gilroy', size=12)
-            ),
-            plot_bgcolor='white',
-            paper_bgcolor='white',
-            height=300,
-            margin=dict(l=0, r=0, t=0, b=0)
+    with col1:
+        st.selectbox(
+            "Primary KPI",
+            ["Impressions", "Clicks", "CTR", "Conversion Rate"],
+            index=0,
+            key="primary_kpi"
         )
-        
-        st.plotly_chart(fig, use_container_width=True)
+    
+    with col2:
+        st.selectbox(
+            "Secondary KPI",
+            ["ROAS", "CPA", "CPC", "Spend"],
+            index=0,
+            key="secondary_kpi"
+        )
+    
+    # Create sample data for the chart (optimal data points for smoother curves)
+    weeks = [
+        "Wo Jan 6", "Wo Jan 20", "Wo Feb 3", "Wo Feb 17",
+        "Wo Mar 3", "Wo Mar 17", "Wo Mar 31", "Wo Apr 14"
+    ]
+    impressions = [38, 45, 48, 55, 50, 58, 60, 57]
+    roas = [2.0, 2.2, 2.3, 2.8, 2.6, 2.9, 3.0, 2.8]
+    
+    # Create dual-axis line chart
+    fig = go.Figure()
+    
+    # Add Impressions line (left axis) with smooth curves
+    fig.add_trace(go.Scatter(
+        x=weeks,
+        y=impressions,
+        mode='lines+markers',
+        name='Impressions',
+        line=dict(color='#9333EA', width=3, shape='spline', smoothing=1.3),
+        marker=dict(size=6),
+        fill='tonexty',
+        fillcolor='rgba(147, 51, 234, 0.1)'
+    ))
+    
+    # Add ROAS line (right axis) with smooth curves
+    fig.add_trace(go.Scatter(
+        x=weeks,
+        y=roas,
+        mode='lines+markers',
+        name='ROAS',
+        line=dict(color='#7C3AED', width=3, shape='spline', smoothing=1.3),
+        marker=dict(size=6),
+        fill='tonexty',
+        fillcolor='rgba(124, 58, 237, 0.1)',
+        yaxis='y2'
+    ))
+    
+    # Update layout for dual-axis
+    fig.update_layout(
+        title=None,
+        xaxis=dict(
+            title=None,
+            showgrid=True,
+            gridcolor='#F3F4F6',
+            tickfont=dict(family='Gilroy', size=11, color='#6B7280'),
+            tickangle=0,
+            automargin=True
+        ),
+        yaxis=dict(
+            title="Impressions",
+            side="left",
+            showgrid=True,
+            gridcolor='#F3F4F6',
+            tickfont=dict(family='Gilroy', size=12, color='#6B7280'),
+            titlefont=dict(family='Gilroy', size=12, color='#6B7280')
+        ),
+        yaxis2=dict(
+            title="ROAS",
+            side="right",
+            overlaying="y",
+            showgrid=False,
+            tickfont=dict(family='Gilroy', size=12, color='#6B7280'),
+            titlefont=dict(family='Gilroy', size=12, color='#6B7280')
+        ),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.5,
+            font=dict(family='Gilroy', size=12)
+        ),
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        height=300,
+        margin=dict(l=0, r=0, t=0, b=0),
+        autosize=True
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def render_kpi_cards():
@@ -287,8 +363,8 @@ def render_kpi_cards():
     
     # Footer note
     st.markdown("""
-        <div style="margin-top: 4px;">
-            <p style="font-family: 'Gilroy', sans-serif; font-size: 12px; color: #9CA3AF; margin: 0;">
+        <div style="margin-top: -8px; max-width: 400px; margin-left: 64px;">
+            <p style="font-family: 'Gilroy', sans-serif; font-size: 12px; color: #9CA3AF; margin: 0; text-align: left; font-style: italic;">
                 *all values are in the local currency
             </p>
         </div>

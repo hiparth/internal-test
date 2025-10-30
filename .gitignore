@@ -64,6 +64,7 @@ yarn.lock
 # Uncomment these if you want to exclude builds from git
 # custom_sidebar/frontend/build/
 # kpi_tiles/frontend/build/
+# performance_table/frontend/build/
 
 # Testing
 .coverage

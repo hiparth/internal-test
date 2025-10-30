@@ -12,6 +12,48 @@ def render_model_run_results():
     """
     Render the Model Run Results page content.
     """
+    # Add page background and styling to match Dashboard
+    st.markdown("""
+        <style>
+        /* Light grey background for entire page */
+        [data-testid="stAppViewContainer"] {
+            background-color: #FCFCFC !important;
+        }
+        
+        /* White container for main content with border shadow */
+        section[data-testid="stMain"] > div:first-child {
+            background-color: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Prevent horizontal scroll */
+        [data-testid="stAppViewContainer"] {
+            overflow-x: hidden !important;
+        }
+        section[data-testid="stMain"] {
+            overflow-x: hidden !important;
+        }
+        
+        /* Custom background color for sidebar */
+        section[data-testid="stSidebar"] {
+            background-color: #FCFCFC !important;
+            border-right: 1px solid #E5E7EB;
+        }
+        
+        /* Ensure columns fit within viewport */
+        [data-testid="column"] {
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
     # Header Section
     render_model_run_header()
     
@@ -28,7 +70,7 @@ def render_model_run_results():
 def render_model_run_header():
     """Render the model run results header with title and description."""
     st.markdown("""
-        <div style="margin-bottom: 32px;">
+        <div style="margin-bottom: 24px;">
             <h1 style="font-family: 'Gilroy', sans-serif; font-weight: 700; font-size: 32px; color: #1F2937; margin: 0 0 8px 0;">
                 Model Run Results
             </h1>
@@ -41,8 +83,22 @@ def render_model_run_header():
 
 def render_model_run_filters():
     """Render the filter dropdowns section."""
-    # Create filter dropdowns side by side with much closer spacing
-    col1, col2 = st.columns([1, 1], gap="small")
+    st.markdown("""
+        <style>
+        /* Reduce width of filter dropdowns */
+        .stSelectbox {
+            max-width: 200px !important;
+        }
+        /* Reduce spacing between sections */
+        div[data-testid="stVerticalBlock"] > div {
+            margin-bottom: 0px !important;
+        }
+        </style>
+        <div style="margin-bottom: 24px; margin-top: 0px;">
+    """, unsafe_allow_html=True)
+    
+    # Create filter dropdowns close together
+    col1, col2, col3 = st.columns([1, 1, 6])
     
     with col1:
         st.selectbox(
@@ -60,135 +116,99 @@ def render_model_run_filters():
             key="date_filter_model"
         )
     
-    # Add custom CSS to make selectboxes more compact and much closer
-    st.markdown("""
-        <style>
-        .stSelectbox > div > div {
-            max-width: 160px;
-        }
-        .stColumns {
-            gap: 0.5rem !important;
-        }
-        .stSelectbox {
-            margin-bottom: 0 !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 def render_model_run_table():
-    """Render the model run results table with clickable buttons."""
-    import pandas as pd
+    """Render the model run results table using custom component."""
+    from performance_table import performance_table
     
-    # Create sample data with clickable links
-    data = {
-        '': list(range(1, 11)),  # Row numbers
-        'Retailer': ['Tesco'] * 10,
-        'Timestamp': ['2024-09-23 14:30:00'] * 10,
-        'View Results': ['https://example.com/view#View Results'] * 10,  # Using # for display text
-        'Rows Processed': [250] * 10,
-        'Status': ['Completed'] * 10,
-        'Download': ['https://example.com/download#Download'] * 10  # Using # for display text
-    }
+    # Create sample data with button objects
+    table_data = [
+        {
+            "Retailer": "Tesco",
+            "Timestamp": "2024-09-23 14:30:00",
+            "View Results": {"type": "button", "label": "View Results", "variant": "primary"},
+            "Rows Processed": "250",
+            "Status": "Completed",
+            "Download": {"type": "button", "label": "Download", "variant": "secondary"}
+        },
+        {
+            "Retailer": "Tesco",
+            "Timestamp": "2024-09-23 14:30:00",
+            "View Results": {"type": "button", "label": "View Results", "variant": "primary"},
+            "Rows Processed": "250",
+            "Status": "Completed",
+            "Download": {"type": "button", "label": "Download", "variant": "secondary"}
+        },
+        {
+            "Retailer": "Tesco",
+            "Timestamp": "2024-09-23 14:30:00",
+            "View Results": {"type": "button", "label": "View Results", "variant": "primary"},
+            "Rows Processed": "250",
+            "Status": "Completed",
+            "Download": {"type": "button", "label": "Download", "variant": "secondary"}
+        },
+        {
+            "Retailer": "Tesco",
+            "Timestamp": "2024-09-23 14:30:00",
+            "View Results": {"type": "button", "label": "View Results", "variant": "primary"},
+            "Rows Processed": "250",
+            "Status": "Completed",
+            "Download": {"type": "button", "label": "Download", "variant": "secondary"}
+        },
+        {
+            "Retailer": "Tesco",
+            "Timestamp": "2024-09-23 14:30:00",
+            "View Results": {"type": "button", "label": "View Results", "variant": "primary"},
+            "Rows Processed": "250",
+            "Status": "Completed",
+            "Download": {"type": "button", "label": "Download", "variant": "secondary"}
+        },
+        {
+            "Retailer": "Tesco",
+            "Timestamp": "2024-09-23 14:30:00",
+            "View Results": {"type": "button", "label": "View Results", "variant": "primary"},
+            "Rows Processed": "250",
+            "Status": "Completed",
+            "Download": {"type": "button", "label": "Download", "variant": "secondary"}
+        },
+        {
+            "Retailer": "Tesco",
+            "Timestamp": "2024-09-23 14:30:00",
+            "View Results": {"type": "button", "label": "View Results", "variant": "primary"},
+            "Rows Processed": "250",
+            "Status": "Completed",
+            "Download": {"type": "button", "label": "Download", "variant": "secondary"}
+        },
+        {
+            "Retailer": "Tesco",
+            "Timestamp": "2024-09-23 14:30:00",
+            "View Results": {"type": "button", "label": "View Results", "variant": "primary"},
+            "Rows Processed": "250",
+            "Status": "Completed",
+            "Download": {"type": "button", "label": "Download", "variant": "secondary"}
+        },
+        {
+            "Retailer": "Tesco",
+            "Timestamp": "2024-09-23 14:30:00",
+            "View Results": {"type": "button", "label": "View Results", "variant": "primary"},
+            "Rows Processed": "250",
+            "Status": "Completed",
+            "Download": {"type": "button", "label": "Download", "variant": "secondary"}
+        },
+        {
+            "Retailer": "Tesco",
+            "Timestamp": "2024-09-23 14:30:00",
+            "View Results": {"type": "button", "label": "View Results", "variant": "primary"},
+            "Rows Processed": "250",
+            "Status": "Completed",
+            "Download": {"type": "button", "label": "Download", "variant": "secondary"}
+        }
+    ]
     
-    df = pd.DataFrame(data)
-    
-    # Apply custom styling to the table
-    st.markdown("""
-        <style>
-        .stDataFrame {
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        .stDataFrame table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .stDataFrame th {
-            background-color: #F9FAFB;
-            color: #374151;
-            font-family: 'Gilroy', sans-serif;
-            font-weight: 500;
-            font-size: 14px;
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid #E5E7EB;
-        }
-        
-        .stDataFrame td {
-            padding: 12px 16px;
-            border-bottom: 1px solid #F3F4F6;
-            font-family: 'Gilroy', sans-serif;
-            font-size: 14px;
-            color: #374151;
-        }
-        
-        .stDataFrame tr:hover {
-            background-color: #F9FAFB;
-        }
-        
-        /* Style button cells with purple background */
-        .stDataFrame td:nth-child(4),
-        .stDataFrame td:nth-child(7) {
-            background-color: #9333EA !important;
-            text-align: center !important;
-            vertical-align: middle !important;
-            padding: 0 !important;
-        }
-        
-        /* Style for clickable links to look like buttons */
-        .stDataFrame a {
-            background-color: transparent !important;
-            color: white !important;
-            padding: 12px 16px !important;
-            border-radius: 0 !important;
-            text-decoration: none !important;
-            font-family: 'Gilroy', sans-serif !important;
-            font-weight: 600 !important;
-            font-size: 13px !important;
-            display: block !important;
-            text-align: center !important;
-            border: none !important;
-            cursor: pointer !important;
-            width: 100% !important;
-            height: 100% !important;
-            line-height: 1.2 !important;
-            box-sizing: border-box !important;
-            transition: background-color 0.2s ease !important;
-        }
-        
-        .stDataFrame a:hover {
-            background-color: rgba(126, 34, 206, 0.2) !important;
-            color: white !important;
-            text-decoration: none !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-    
-    # Display the table with clickable buttons
-    st.dataframe(
-        df,
-        use_container_width=True,
-        hide_index=True,
-        column_config={
-            "": st.column_config.TextColumn("", width="small"),
-            "Retailer": st.column_config.TextColumn("Retailer", width="medium"),
-            "Timestamp": st.column_config.TextColumn("Timestamp", width="large"),
-            "View Results": st.column_config.LinkColumn(
-                "View Results",
-                display_text=r"https://.*?#(.*)$"  # Extract text after #
-            ),
-            "Rows Processed": st.column_config.TextColumn("Rows Processed", width="medium"),
-            "Status": st.column_config.TextColumn("Status", width="medium"),
-            "Download": st.column_config.LinkColumn(
-                "Download",
-                display_text=r"https://.*?#(.*)$"  # Extract text after #
-            )
-        }
-    )
+    # Render the custom performance table component with buttons
+    performance_table(data=table_data, key="model_run_results_table")
 
 
 def render_model_run_pagination():

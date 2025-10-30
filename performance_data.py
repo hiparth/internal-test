@@ -12,6 +12,48 @@ def render_performance_data():
     """
     Render the Performance Data page content.
     """
+    # Add page background and styling to match Dashboard
+    st.markdown("""
+        <style>
+        /* Light grey background for entire page */
+        [data-testid="stAppViewContainer"] {
+            background-color: #FCFCFC !important;
+        }
+        
+        /* White container for main content with border shadow */
+        section[data-testid="stMain"] > div:first-child {
+            background-color: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Prevent horizontal scroll */
+        [data-testid="stAppViewContainer"] {
+            overflow-x: hidden !important;
+        }
+        section[data-testid="stMain"] {
+            overflow-x: hidden !important;
+        }
+        
+        /* Custom background color for sidebar */
+        section[data-testid="stSidebar"] {
+            background-color: #FCFCFC !important;
+            border-right: 1px solid #E5E7EB;
+        }
+        
+        /* Ensure columns fit within viewport */
+        [data-testid="column"] {
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
     # Header Section
     render_performance_data_header()
     
@@ -32,7 +74,7 @@ def render_performance_data_header():
     
     with col1:
         st.markdown("""
-            <div style="margin-bottom: 24px;">
+            <div style="margin-bottom: 8px;">
                 <h1 style="font-family: 'Gilroy', sans-serif; font-weight: 700; font-size: 32px; color: #1F2937; margin: 0 0 8px 0;">
                     Performance Data
                 </h1>
@@ -73,15 +115,25 @@ def render_performance_data_header():
 def render_performance_filters():
     """Render the filter dropdowns section."""
     st.markdown("""
-        <div style="margin-bottom: 32px;">
+        <style>
+        /* Reduce width of filter dropdowns in performance data page */
+        .stSelectbox {
+            max-width: 200px !important;
+        }
+        /* Reduce spacing between header and filters */
+        div[data-testid="stVerticalBlock"] > div:has(+ div div[data-testid="column"]) {
+            margin-bottom: 0px !important;
+        }
+        </style>
+        <div style="margin-bottom: 24px; margin-top: -16px;">
             <div style="display: flex; gap: 16px; flex-wrap: wrap;">
     """, unsafe_allow_html=True)
     
-    # Create filter dropdowns
-    col1, col2, col3, col4 = st.columns(4)
+    # Create filter dropdowns with narrower columns
+    col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 2])
     
     with col1:
-        st.selectbox(
+        retailer = st.selectbox(
             "Retailer",
             ["Tesco", "Sainsbury's", "Asda", "Morrisons"],
             index=0,
@@ -89,7 +141,7 @@ def render_performance_filters():
         )
     
     with col2:
-        st.selectbox(
+        campaign = st.selectbox(
             "Campaign",
             ["All Campaign", "Campaign 1", "Campaign 2", "Campaign 3"],
             index=0,
@@ -97,7 +149,7 @@ def render_performance_filters():
         )
     
     with col3:
-        st.selectbox(
+        keyword = st.selectbox(
             "Keywords",
             ["All Keywords", "Keyword 1", "Keyword 2", "Keyword 3"],
             index=0,
@@ -105,7 +157,7 @@ def render_performance_filters():
         )
     
     with col4:
-        st.selectbox(
+        week = st.selectbox(
             "Select Week",
             ["Week of Feb 24 2025", "Week of Feb 17 2025", "Week of Feb 10 2025", "Week of Feb 3 2025"],
             index=0,
@@ -113,87 +165,172 @@ def render_performance_filters():
         )
     
     st.markdown("</div></div>", unsafe_allow_html=True)
+    
+    # Store filter values in session state for use in table rendering
+    st.session_state['perf_retailer'] = retailer
+    st.session_state['perf_campaign'] = campaign
+    st.session_state['perf_keyword'] = keyword
+    st.session_state['perf_week'] = week
 
 
 def render_performance_table():
-    """Render the performance data table."""
-    # Create sample data
-    data = {
-        'Keywords': ['Pringle', 'Party', 'Picnic', 'Breakfast', 'Crip', 'Buffet', 'Cereal', 'Snacking', 'Lunchbox', 'Cocoa'],
-        'Impressions': ['2.0M', '2.0M', '2.0M', '2.0M', '2.0M', '2.0M', '2.0M', '2.0M', '2.0M', '2.0M'],
-        '*CPA': ['0.33', '0.33', '0.33', '0.33', '0.33', '0.33', '0.33', '0.33', '0.33', '0.33'],
-        'Avg. Rank': ['3.25', '3.25', '3.25', '3.25', '3.25', '3.25', '3.25', '3.25', '3.25', '3.25'],
-        'CTR': ['1.15%', '1.15%', '1.15%', '1.15%', '1.15%', '1.15%', '1.15%', '1.15%', '1.15%', '1.15%'],
-        'Conversion Rate': ['2.33%', '2.33%', '2.33%', '2.33%', '2.33%', '2.33%', '2.33%', '2.33%', '2.33%', '2.33%'],
-        'Click': ['23.0K', '23.0K', '23.0K', '23.0K', '23.0K', '23.0K', '23.0K', '23.0K', '23.0K', '23.0K'],
-        'ROAS': ['2.58', '2.58', '2.58', '2.58', '2.58', '2.58', '2.58', '2.58', '2.58', '2.58'],
-        '*CPC': ['0.15', '0.15', '0.15', '0.15', '0.15', '0.15', '0.15', '0.15', '0.15', '0.15'],
-        'Sales (Con)': ['24.0K', '24.0K', '24.0K', '24.0K', '24.0K', '24.0K', '24.0K', '24.0K', '24.0K', '24.0K'],
-        '*Sales (Rev)': ['25.8K', '25.8K', '25.8K', '25.8K', '25.8K', '25.8K', '25.8K', '25.8K', '25.8K', '25.8K'],
-        '*Spend': ['10.0K', '10.0K', '10.0K', '10.0K', '10.0K', '10.0K', '10.0K', '10.0K', '10.0K', '10.0K']
-    }
+    """Render the performance data table using custom component."""
+    from performance_table import performance_table
     
-    df = pd.DataFrame(data)
+    # Get filter values from session state (for future data filtering)
+    retailer = st.session_state.get('perf_retailer', 'Tesco')
+    campaign = st.session_state.get('perf_campaign', 'All Campaign')
+    keyword = st.session_state.get('perf_keyword', 'All Keywords')
+    week = st.session_state.get('perf_week', 'Week of Feb 24 2025')
     
-    # Apply custom styling to the table
-    st.markdown("""
-        <style>
-        .stDataFrame {
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    # Create sample data with delta indicators
+    # Each cell is an object with 'value' and 'deltaPercent' properties
+    # In a real application, this data would be filtered based on the selected filters
+    table_data = [
+        {
+            "Keywords": "Pringle",
+            "Impressions": {"value": "2.0M", "deltaPercent": 10},
+            "*CPA": {"value": "0.33", "deltaPercent": 10},
+            "Avg. Rank": {"value": "3.25", "deltaPercent": 10},
+            "CTR": {"value": "1.15%", "deltaPercent": 10},
+            "Conversion Rate": {"value": "2.33%", "deltaPercent": 10},
+            "Click": {"value": "23.0K", "deltaPercent": 10},
+            "ROAS": {"value": "2.58", "deltaPercent": 10},
+            "*CPC": {"value": "0.15", "deltaPercent": 10},
+            "Sales (Con)": {"value": "24.0K", "deltaPercent": 10},
+            "*Sales (Rev)": {"value": "25.8K", "deltaPercent": 10},
+            "*Spend": {"value": "10.0K", "deltaPercent": 10}
+        },
+        {
+            "Keywords": "Party",
+            "Impressions": {"value": "2.0M", "deltaPercent": 10},
+            "*CPA": {"value": "0.33", "deltaPercent": 10},
+            "Avg. Rank": {"value": "3.25", "deltaPercent": 10},
+            "CTR": {"value": "1.15%", "deltaPercent": 10},
+            "Conversion Rate": {"value": "2.33%", "deltaPercent": 10},
+            "Click": {"value": "23.0K", "deltaPercent": 10},
+            "ROAS": {"value": "2.58", "deltaPercent": 10},
+            "*CPC": {"value": "0.15", "deltaPercent": 10},
+            "Sales (Con)": {"value": "24.0K", "deltaPercent": 10},
+            "*Sales (Rev)": {"value": "25.8K", "deltaPercent": 10},
+            "*Spend": {"value": "10.0K", "deltaPercent": 10}
+        },
+        {
+            "Keywords": "Picnic",
+            "Impressions": {"value": "2.0M", "deltaPercent": 10},
+            "*CPA": {"value": "0.33", "deltaPercent": 10},
+            "Avg. Rank": {"value": "3.25", "deltaPercent": 10},
+            "CTR": {"value": "1.15%", "deltaPercent": 10},
+            "Conversion Rate": {"value": "2.33%", "deltaPercent": 10},
+            "Click": {"value": "23.0K", "deltaPercent": 10},
+            "ROAS": {"value": "2.58", "deltaPercent": 10},
+            "*CPC": {"value": "0.15", "deltaPercent": 10},
+            "Sales (Con)": {"value": "24.0K", "deltaPercent": 10},
+            "*Sales (Rev)": {"value": "25.8K", "deltaPercent": 10},
+            "*Spend": {"value": "10.0K", "deltaPercent": 10}
+        },
+        {
+            "Keywords": "Breakfast",
+            "Impressions": {"value": "2.0M", "deltaPercent": 10},
+            "*CPA": {"value": "0.33", "deltaPercent": 10},
+            "Avg. Rank": {"value": "3.25", "deltaPercent": 10},
+            "CTR": {"value": "1.15%", "deltaPercent": 10},
+            "Conversion Rate": {"value": "2.33%", "deltaPercent": 10},
+            "Click": {"value": "23.0K", "deltaPercent": 10},
+            "ROAS": {"value": "2.58", "deltaPercent": 10},
+            "*CPC": {"value": "0.15", "deltaPercent": 10},
+            "Sales (Con)": {"value": "24.0K", "deltaPercent": 10},
+            "*Sales (Rev)": {"value": "25.8K", "deltaPercent": 10},
+            "*Spend": {"value": "10.0K", "deltaPercent": 10}
+        },
+        {
+            "Keywords": "Crip",
+            "Impressions": {"value": "2.0M", "deltaPercent": 10},
+            "*CPA": {"value": "0.33", "deltaPercent": 10},
+            "Avg. Rank": {"value": "3.25", "deltaPercent": 10},
+            "CTR": {"value": "1.15%", "deltaPercent": 10},
+            "Conversion Rate": {"value": "2.33%", "deltaPercent": 10},
+            "Click": {"value": "23.0K", "deltaPercent": 10},
+            "ROAS": {"value": "2.58", "deltaPercent": 10},
+            "*CPC": {"value": "0.15", "deltaPercent": 10},
+            "Sales (Con)": {"value": "24.0K", "deltaPercent": 10},
+            "*Sales (Rev)": {"value": "25.8K", "deltaPercent": 10},
+            "*Spend": {"value": "10.0K", "deltaPercent": 10}
+        },
+        {
+            "Keywords": "Buffet",
+            "Impressions": {"value": "2.0M", "deltaPercent": 10},
+            "*CPA": {"value": "0.33", "deltaPercent": 10},
+            "Avg. Rank": {"value": "3.25", "deltaPercent": 10},
+            "CTR": {"value": "1.15%", "deltaPercent": 10},
+            "Conversion Rate": {"value": "2.33%", "deltaPercent": 10},
+            "Click": {"value": "23.0K", "deltaPercent": 10},
+            "ROAS": {"value": "2.58", "deltaPercent": 10},
+            "*CPC": {"value": "0.15", "deltaPercent": 10},
+            "Sales (Con)": {"value": "24.0K", "deltaPercent": 10},
+            "*Sales (Rev)": {"value": "25.8K", "deltaPercent": 10},
+            "*Spend": {"value": "10.0K", "deltaPercent": 10}
+        },
+        {
+            "Keywords": "Cereal",
+            "Impressions": {"value": "2.0M", "deltaPercent": 10},
+            "*CPA": {"value": "0.33", "deltaPercent": 10},
+            "Avg. Rank": {"value": "3.25", "deltaPercent": 10},
+            "CTR": {"value": "1.15%", "deltaPercent": 10},
+            "Conversion Rate": {"value": "2.33%", "deltaPercent": 10},
+            "Click": {"value": "23.0K", "deltaPercent": 10},
+            "ROAS": {"value": "2.58", "deltaPercent": 10},
+            "*CPC": {"value": "0.15", "deltaPercent": 10},
+            "Sales (Con)": {"value": "24.0K", "deltaPercent": 10},
+            "*Sales (Rev)": {"value": "25.8K", "deltaPercent": 10},
+            "*Spend": {"value": "10.0K", "deltaPercent": 10}
+        },
+        {
+            "Keywords": "Snacking",
+            "Impressions": {"value": "2.0M", "deltaPercent": 10},
+            "*CPA": {"value": "0.33", "deltaPercent": 10},
+            "Avg. Rank": {"value": "3.25", "deltaPercent": 10},
+            "CTR": {"value": "1.15%", "deltaPercent": 10},
+            "Conversion Rate": {"value": "2.33%", "deltaPercent": 10},
+            "Click": {"value": "23.0K", "deltaPercent": 10},
+            "ROAS": {"value": "2.58", "deltaPercent": 10},
+            "*CPC": {"value": "0.15", "deltaPercent": 10},
+            "Sales (Con)": {"value": "24.0K", "deltaPercent": 10},
+            "*Sales (Rev)": {"value": "25.8K", "deltaPercent": 10},
+            "*Spend": {"value": "10.0K", "deltaPercent": 10}
+        },
+        {
+            "Keywords": "Lunchbox",
+            "Impressions": {"value": "2.0M", "deltaPercent": 10},
+            "*CPA": {"value": "0.33", "deltaPercent": 10},
+            "Avg. Rank": {"value": "3.25", "deltaPercent": 10},
+            "CTR": {"value": "1.15%", "deltaPercent": 10},
+            "Conversion Rate": {"value": "2.33%", "deltaPercent": 10},
+            "Click": {"value": "23.0K", "deltaPercent": 10},
+            "ROAS": {"value": "2.58", "deltaPercent": 10},
+            "*CPC": {"value": "0.15", "deltaPercent": 10},
+            "Sales (Con)": {"value": "24.0K", "deltaPercent": 10},
+            "*Sales (Rev)": {"value": "25.8K", "deltaPercent": 10},
+            "*Spend": {"value": "10.0K", "deltaPercent": 10}
+        },
+        {
+            "Keywords": "Cocoa",
+            "Impressions": {"value": "2.0M", "deltaPercent": 10},
+            "*CPA": {"value": "0.33", "deltaPercent": 10},
+            "Avg. Rank": {"value": "3.25", "deltaPercent": 10},
+            "CTR": {"value": "1.15%", "deltaPercent": 10},
+            "Conversion Rate": {"value": "2.33%", "deltaPercent": 10},
+            "Click": {"value": "23.0K", "deltaPercent": 10},
+            "ROAS": {"value": "2.58", "deltaPercent": 10},
+            "*CPC": {"value": "0.15", "deltaPercent": 10},
+            "Sales (Con)": {"value": "24.0K", "deltaPercent": 10},
+            "*Sales (Rev)": {"value": "25.8K", "deltaPercent": 10},
+            "*Spend": {"value": "10.0K", "deltaPercent": 10}
         }
-        
-        .stDataFrame table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .stDataFrame th {
-            background-color: #F9FAFB;
-            color: #374151;
-            font-family: 'Gilroy', sans-serif;
-            font-weight: 500;
-            font-size: 14px;
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid #E5E7EB;
-        }
-        
-        .stDataFrame td {
-            padding: 12px 16px;
-            border-bottom: 1px solid #F3F4F6;
-            font-family: 'Gilroy', sans-serif;
-            font-size: 14px;
-            color: #374151;
-        }
-        
-        .stDataFrame tr:hover {
-            background-color: #F9FAFB;
-        }
-        </style>
-    """, unsafe_allow_html=True)
+    ]
     
-    # Display the table
-    st.dataframe(
-        df,
-        use_container_width=True,
-        hide_index=True,
-        column_config={
-            "Keywords": st.column_config.TextColumn("Keywords", width="medium"),
-            "Impressions": st.column_config.TextColumn("Impressions", width="small"),
-            "*CPA": st.column_config.TextColumn("*CPA", width="small"),
-            "Avg. Rank": st.column_config.TextColumn("Avg. Rank", width="small"),
-            "CTR": st.column_config.TextColumn("CTR", width="small"),
-            "Conversion Rate": st.column_config.TextColumn("Conversion Rate", width="small"),
-            "Click": st.column_config.TextColumn("Click", width="small"),
-            "ROAS": st.column_config.TextColumn("ROAS", width="small"),
-            "*CPC": st.column_config.TextColumn("*CPC", width="small"),
-            "Sales (Con)": st.column_config.TextColumn("Sales (Con)", width="small"),
-            "*Sales (Rev)": st.column_config.TextColumn("*Sales (Rev)", width="small"),
-            "*Spend": st.column_config.TextColumn("*Spend", width="small")
-        }
-    )
+    # Render the custom performance table component
+    performance_table(data=table_data, key="performance_data_table")
 
 
 def render_pagination():
